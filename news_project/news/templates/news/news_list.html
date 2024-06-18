@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Новости{% endblock %}
+
+{% block content %}
+    <ul class="news-list">
+        {% for item in page_obj %}
+            <li>
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}" class="news-image">
+                {% endif %}
+                <a href="{% url 'news_detail' item.pk %}">{{ item.title }}</a>
+                {% if user.is_superuser %}
+                    - <a href="{% url 'news_edit' item.pk %}">Редактировать</a>
+                    - <a href="{% url 'news_delete' item.pk %}">Удалить</a>
+                {% endif %}
+                <p>{{ item.content }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    
+    {% if user.is_superuser %}
+        <a href="{% url 'news_create' %}" class="button">Создать новость</a>
+    {% endif %}
+{% endblock %}
